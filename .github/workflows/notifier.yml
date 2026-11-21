@@ -1,0 +1,24 @@
+name: Notifier les élèves
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+    inputs:
+      seed:
+        description: "oui = mémoriser l'état actuel sans envoyer de notification (1er lancement)"
+        default: "non"
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install firebase-admin
+      - run: node notify.js
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          SEED: ${{ github.event.inputs.seed }}
